@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_video_app/ui/player.dart';
 import 'package:path/path.dart' as p;
 import 'dart:async';
 import 'dart:io';
+import 'package:thumbnails/thumbnails.dart';
+import 'package:sweet_alert_dialogs/sweet_alert_dialogs.dart';
+
+
 
 class Home extends StatefulWidget {
 
@@ -39,6 +44,17 @@ class _HomeState extends State<Home> {
     _getVideos();
   }
 
+  //Generate Thumbnail for videos
+  Future<String> _genThumb(String vid) async {
+    String thumb = await Thumbnails.getThumbnail(
+        videoFile: '$vid',
+        imageType: ThumbFormat.JPEG,
+        quality: 30);
+    print('Path to cache folder $thumb');
+
+    return thumb;
+  }
+
   List<Widget> createImageCardItem(
       List videos, BuildContext context) {
     // Children list for the list.
@@ -48,11 +64,11 @@ class _HomeState extends State<Home> {
       for (int i = 0; i < lengthOfList; i++) {
         String vids_src = videos[i];
         String vids_name = p.basename(videos[i]);
+        var vids_img = _genThumb(vids_src);
 
-//        File img_file = new File(img_src);
+        File imgFile = new File(vids_img.toString());
         print(vids_name);
-        // Image URL
-        // List item created with an image of the poster
+
         var listItem = GridTile(
             footer: GridTileBar(
               backgroundColor: Colors.black45,
@@ -62,37 +78,39 @@ class _HomeState extends State<Home> {
               onTap: () {
                 var router = MaterialPageRoute(
                     builder: (BuildContext context){
-//                      return Details(header: movie.title, img: imageURL, id: movie.id);
+                      return Player(header: widget.header, video: vids_src);
                     }
                 );
 
                 Navigator.of(context).push(router);
               },
+              //Display delete alert when longpress on card
               onLongPress: (){
-                var alert = new AlertDialog(
-                  title: Text("Delete?"),
-                  content: Text("Are you sure you want to delete this file?"),
-
-                  actions: <Widget>[
-
-                    FlatButton(
-                      onPressed: (){Navigator.pop(context);},
-                      child: Text("No"),
-                    ),
-                    FlatButton(
-                      onPressed: (){
-                        var myFile = new File(vids_src);
-                        myFile.delete();
-                      },
-                      child: Text("Yes"),
-                    ),
-                  ],
-                );
-
-                showDialog(context: context, builder: (context)=> alert);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return RichAlertDialog(
+                        alertTitle: richTitle("Delete File?"),
+                        alertSubtitle: richSubtitle("Are you sure you want to delete this file?"),
+                        alertType: RichAlertType.WARNING,
+                        actions: <Widget>[
+                          FlatButton(
+                            onPressed: (){
+                              var myFile = new File(vids_src);
+                              myFile.delete();
+                            },
+                            child: Text("Yes"),
+                          ),
+                          FlatButton(
+                            child: Text("No"),
+                            onPressed: (){Navigator.pop(context);},
+                          ),
+                        ],
+                      );
+                    });
               },
 
-//              child: Image.file(img_file),
+              child: Image.file(imgFile),
 //              child: FadeInImage.(
 //                placeholder: "$kTransparentImage",
 //                image: img_src,
