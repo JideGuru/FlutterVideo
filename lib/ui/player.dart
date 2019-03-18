@@ -20,6 +20,7 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player> {
   TargetPlatform _platform;
+
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
 
@@ -50,6 +51,7 @@ class _PlayerState extends State<Player> {
       fullScreenByDefault: true,
     );
 
+    print(_platform);
   }
 
   @override

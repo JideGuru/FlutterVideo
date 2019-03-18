@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
       videos = result;
       print(videos);
     } on PlatformException catch (e) {
-      print("Error");
+      print("Error $e");
     }
 
     setState(() {
@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    super.initState();
     _getVideos();
   }
 
@@ -62,41 +63,41 @@ class _HomeState extends State<Home> {
     if (videos != null) {
       var lengthOfList = videos.length;
       for (int i = 0; i < lengthOfList; i++) {
-        String vids_src = videos[i];
-        String vids_name = p.basename(videos[i]);
-        var vids_img = _genThumb(vids_src);
+        String vidSrc = videos[i];
+        String vidName = p.basename(videos[i]);
+        var vidImg = _genThumb(vidSrc);
 
-        File imgFile = new File(vids_img.toString());
-        print(vids_name);
+        File imgFile = new File(vidImg.toString());
+        print(vidName);
 
         var listItem = GridTile(
             footer: GridTileBar(
               backgroundColor: Colors.black45,
-              title: Text(vids_name),
+              title: Text(vidName),
             ),
             child: GestureDetector(
               onTap: () {
                 var router = MaterialPageRoute(
                     builder: (BuildContext context){
-                      return Player(header: widget.header, video: vids_src);
+                      return Player(header: widget.header, video: vidSrc);
                     }
                 );
 
                 Navigator.of(context).push(router);
               },
-              //Display delete alert when longpress on card
+              //Display delete alert when longPress on card
               onLongPress: (){
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return RichAlertDialog(
                         alertTitle: richTitle("Delete File?"),
-                        alertSubtitle: richSubtitle("Are you sure you want to delete this file?"),
+                        alertSubtitle: richSubtitle("Are you sure you want to delete $vidName?"),
                         alertType: RichAlertType.WARNING,
                         actions: <Widget>[
                           FlatButton(
                             onPressed: (){
-                              var myFile = new File(vids_src);
+                              File myFile = new File(vidSrc);
                               myFile.delete();
                             },
                             child: Text("Yes"),
