@@ -56,9 +56,9 @@ class _PlayerState extends State<Player> {
 
   @override
   void dispose() {
+    super.dispose();
     _videoPlayerController.dispose();
     _chewieController.dispose();
-    super.dispose();
   }
 
   @override

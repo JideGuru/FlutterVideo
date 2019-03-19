@@ -30,6 +30,7 @@ class _HomeState extends State<Home> {
       final List result = await platform.invokeMethod('getVideos');
       videos = result;
       print(videos);
+
     } on PlatformException catch (e) {
       print("Error $e");
     }
@@ -45,8 +46,17 @@ class _HomeState extends State<Home> {
     _getVideos();
   }
 
+  Future<String> _genThumb(String vid) async {
+    String thumb = await Thumbnails.getThumbnail(
+        videoFile: '$vid',
+        imageType: ThumbFormat.JPEG,
+        quality: 30);
+
+    return thumb;
+  }
+
   List<Widget> createImageCardItem(
-      List videos, BuildContext context) {
+      List videos,BuildContext context) {
     // Children list for the list.
     List<Widget> listElementWidgetList = new List<Widget>();
     if (videos != null) {
@@ -55,21 +65,9 @@ class _HomeState extends State<Home> {
         String vidSrc = videos[i];
         String vidName = p.basename(videos[i]);
 
-        String thumb = "hi";
-        void _genThumb() async {
-          thumb = await Thumbnails.getThumbnail(
-              videoFile: '$vidSrc',
-              imageType: ThumbFormat.JPEG,
-              quality: 30);
-//          print('Path to cache folder $thumb');
+        String vidImg;
 
-        }
-        _genThumb();
-
-        var vidImg = thumb == null ? 0: thumb;
-//        var vidImg;
-
-        File imgFile = new File(vidImg.toString());
+        File imgFile = new File(vidImg);
         print(vidImg);
 
         var listItem = GridTile(
@@ -99,6 +97,7 @@ class _HomeState extends State<Home> {
                       onPressed: () {
                         File myFile = new File(vidSrc);
                         myFile.delete();
+                        Navigator.pop(context);
                       },
                       child: Text("Yes"),
                     ),
@@ -126,6 +125,7 @@ class _HomeState extends State<Home> {
         listElementWidgetList.add(listItem);
       }
     }
+
     return listElementWidgetList;
   }
 
@@ -163,8 +163,7 @@ class _HomeState extends State<Home> {
               crossAxisSpacing: 10.0,
               mainAxisSpacing: 10.0,
               crossAxisCount: 2,
-              children:
-              createImageCardItem(vids, context),
+              children: createImageCardItem(vids, context),
             ),
           ),
         ],
