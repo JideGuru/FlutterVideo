@@ -22,6 +22,7 @@ class _HomeState extends State<Home> {
   //Channel Platform: Check MainActivity.java
   static const platform = const MethodChannel('samples.flutter.io/videos');
   List vids;
+  String thumbnail;
 
   //Check the MainActivity.java
   Future<void> _getVideos() async {
@@ -46,14 +47,17 @@ class _HomeState extends State<Home> {
   }
 
   //Generate Thumbnail for videos
-  Future<String> _genThumb(String vid) async {
+  void _genThumb(String vid) async {
     String thumb = await Thumbnails.getThumbnail(
         videoFile: '$vid',
         imageType: ThumbFormat.JPEG,
         quality: 30);
-    print('Path to cache folder $thumb');
+//    print('Path to cache folder $thumb');
 
-    return thumb;
+    setState(() {
+      thumbnail = thumb;
+    });
+//    return thumb;
   }
 
   List<Widget> createImageCardItem(
@@ -65,10 +69,12 @@ class _HomeState extends State<Home> {
       for (int i = 0; i < lengthOfList; i++) {
         String vidSrc = videos[i];
         String vidName = p.basename(videos[i]);
-        var vidImg = _genThumb(vidSrc);
 
-        File imgFile = new File(vidImg.toString());
-        print(vidName);
+//        _genThumb(vidSrc);
+//        var vidImg = thumbnail == null ? 0 : thumbnail;
+
+//        File imgFile = new File(vidImg);
+//        print(vidImg);
 
         var listItem = GridTile(
             footer: GridTileBar(
@@ -86,32 +92,32 @@ class _HomeState extends State<Home> {
                 Navigator.of(context).push(router);
               },
               //Display delete alert when longPress on card
-              onLongPress: (){
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return RichAlertDialog(
-                        alertTitle: richTitle("Delete File?"),
-                        alertSubtitle: richSubtitle("Are you sure you want to delete $vidName?"),
-                        alertType: RichAlertType.WARNING,
-                        actions: <Widget>[
-                          FlatButton(
-                            onPressed: (){
-                              File myFile = new File(vidSrc);
-                              myFile.delete();
-                            },
-                            child: Text("Yes"),
-                          ),
-                          FlatButton(
-                            child: Text("No"),
-                            onPressed: (){Navigator.pop(context);},
-                          ),
-                        ],
-                      );
-                    });
-              },
+              onLongPress: () {
+                var alert = new AlertDialog(
+                  title: Text("Delete File?"),
+                  content: Text("Are you sure you want to delete $vidName?"),
 
-              child: Image.file(imgFile),
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        File myFile = new File(vidSrc);
+                        myFile.delete();
+                      },
+                      child: Text("Yes"),
+                    ),
+                    FlatButton(
+                      child: Text("No"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                );
+
+                showDialog(context: context, builder: (context) => alert);
+              }
+
+//              child: Image.file(imgFile),
 //              child: FadeInImage.(
 //                placeholder: "$kTransparentImage",
 //                image: img_src,
