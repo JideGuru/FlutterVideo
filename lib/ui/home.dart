@@ -22,7 +22,6 @@ class _HomeState extends State<Home> {
   //Channel Platform: Check MainActivity.java
   static const platform = const MethodChannel('samples.flutter.io/videos');
   List vids;
-  String thumbnail;
 
   //Check the MainActivity.java
   Future<void> _getVideos() async {
@@ -47,18 +46,18 @@ class _HomeState extends State<Home> {
   }
 
   //Generate Thumbnail for videos
-  void _genThumb(String vid) async {
-    String thumb = await Thumbnails.getThumbnail(
-        videoFile: '$vid',
-        imageType: ThumbFormat.JPEG,
-        quality: 30);
-//    print('Path to cache folder $thumb');
-
-    setState(() {
-      thumbnail = thumb;
-    });
-//    return thumb;
-  }
+//  void _genThumb(String vid) async {
+//    String thumb = await Thumbnails.getThumbnail(
+//        videoFile: '$vid',
+//        imageType: ThumbFormat.JPEG,
+//        quality: 30);
+////    print('Path to cache folder $thumb');
+//
+//    setState(() {
+//      thumbnail = thumb;
+//    });
+////    return thumb;
+//  }
 
   List<Widget> createImageCardItem(
       List videos, BuildContext context) {
@@ -70,11 +69,22 @@ class _HomeState extends State<Home> {
         String vidSrc = videos[i];
         String vidName = p.basename(videos[i]);
 
-//        _genThumb(vidSrc);
-//        var vidImg = thumbnail == null ? 0 : thumbnail;
+        String thumb = "hi";
+        void _genThumb() async {
+          thumb = await Thumbnails.getThumbnail(
+              videoFile: '$vidSrc',
+              imageType: ThumbFormat.JPEG,
+              quality: 30);
+//          print('Path to cache folder $thumb');
 
-//        File imgFile = new File(vidImg);
-//        print(vidImg);
+        }
+        _genThumb();
+
+        var vidImg = thumb == null ? 0: thumb;
+//        var vidImg;
+
+        File imgFile = new File(vidImg.toString());
+        print(vidImg);
 
         var listItem = GridTile(
             footer: GridTileBar(
@@ -91,6 +101,7 @@ class _HomeState extends State<Home> {
 
                 Navigator.of(context).push(router);
               },
+
               //Display delete alert when longPress on card
               onLongPress: () {
                 var alert = new AlertDialog(
@@ -115,9 +126,11 @@ class _HomeState extends State<Home> {
                 );
 
                 showDialog(context: context, builder: (context) => alert);
-              }
+              },
 
-//              child: Image.file(imgFile),
+
+
+              child: Image.file(imgFile),
 //              child: FadeInImage.(
 //                placeholder: "$kTransparentImage",
 //                image: img_src,
