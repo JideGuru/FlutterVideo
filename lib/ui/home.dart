@@ -45,20 +45,6 @@ class _HomeState extends State<Home> {
     _getVideos();
   }
 
-  //Generate Thumbnail for videos
-//  void _genThumb(String vid) async {
-//    String thumb = await Thumbnails.getThumbnail(
-//        videoFile: '$vid',
-//        imageType: ThumbFormat.JPEG,
-//        quality: 30);
-////    print('Path to cache folder $thumb');
-//
-//    setState(() {
-//      thumbnail = thumb;
-//    });
-////    return thumb;
-//  }
-
   List<Widget> createImageCardItem(
       List videos, BuildContext context) {
     // Children list for the list.
