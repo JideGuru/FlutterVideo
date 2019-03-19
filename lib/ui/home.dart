@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'dart:async';
 import 'dart:io';
 import 'package:thumbnails/thumbnails.dart';
-import 'package:sweet_alert_dialogs/sweet_alert_dialogs.dart';
 
 
 
@@ -46,12 +45,14 @@ class _HomeState extends State<Home> {
     _getVideos();
   }
 
-  Future<String> _genThumb(String vid) async {
-    String thumb = await Thumbnails.getThumbnail(
+  String _genThumb(String vid) {
+    var thumb;
+      Thumbnails.getThumbnail(
         videoFile: '$vid',
         imageType: ThumbFormat.JPEG,
-        quality: 30);
+        quality: 30).then((thumbnail){});
 
+    print(thumb);
     return thumb;
   }
 
@@ -65,10 +66,10 @@ class _HomeState extends State<Home> {
         String vidSrc = videos[i];
         String vidName = p.basename(videos[i]);
 
-        String vidImg;
-
-        File imgFile = new File(vidImg);
-        print(vidImg);
+//        String vidImg = _genThumb(vidSrc) == null ? 0 : _genThumb(vidSrc);
+//
+//        File imgFile = new File(vidImg);
+//        print(vidImg);
 
         var listItem = GridTile(
             footer: GridTileBar(
@@ -115,7 +116,7 @@ class _HomeState extends State<Home> {
 
 
 
-              child: Image.file(imgFile),
+//              child: Image.file(imgFile),
 //              child: FadeInImage.(
 //                placeholder: "$kTransparentImage",
 //                image: img_src,
